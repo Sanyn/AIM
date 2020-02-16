@@ -1,7 +1,0 @@
-README.md
-setup.py
-AIM/__init__.py
-AIM_Sanyn.egg-info/PKG-INFO
-AIM_Sanyn.egg-info/SOURCES.txt
-AIM_Sanyn.egg-info/dependency_links.txt
-AIM_Sanyn.egg-info/top_level.txt
