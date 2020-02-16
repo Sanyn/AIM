@@ -1,7 +1,5 @@
 #Zsombor Papp
 class num:
-	def len(self):
-		return(len(self.val))
 	def __init__(self, string, decimalPoint):
 		self.val=[]
 		for i in range(len(string)):
@@ -94,7 +92,7 @@ class num:
 	def removeZerosBack(self):
 		while(self.val[len(self.val)-1]==0) and (len(self.val)>1):
 			self.val.pop(len(self.val)-1)
-		if self.val[len(self.val)-1]==0:
+		if self.val[0]==0:
 			self.dP=1
 	def divide(self,otherNum,maxAcc):
 		c=otherNum.getVal()
@@ -134,68 +132,43 @@ class num:
 	def getDP(self):
 		return self.dP
 	def toString(self):
-		s=""
-		for i in range(len(self.val)):
-			s+=str(self.val[i])
-		s=s[:self.dP] + "." + s[self.dP:]
-		return s
+		return self.val[:dP] + '.' + self.val[dP:]
 def multiplyByInt(a,integer):
 	c=0
-	integer=int(integer)
-	ret=num("0",0)
-	for i in range(a.len()-1):
-		ret.val.append(0)
-	ret.dP=a.dP
 	for i in range (len(a.val)-1,-1,-1):
-		ret.val[i]=(a.val[i]*integer)+c
-		c=int(ret.val[i]//10)
-		ret.val[i]%=10
+		a.val[i]=(a.val[i]*integer)+c
+		c=a.val[i]//10
+		a.val[i]%=10
 	while c!=0:
-		ret.val.insert(0,int(c%10))
+		a.val.insert(0,c%10)
 		c//=10
-		ret.dP+=1
-	return ret
+		a.dP+=1
+	return a
 def stringToNum(str):
 	dP=str.find(".")
 	str=str.replace(".","")
 	return num(str, dP)
 def add(num1, num2):
-	ret=num("0",0)
-	for i in range(len(num1.val)-1):
-		ret.val.append(0)
-	ret.dP=int(num1.dP)
-	while(num1.dP<num2.dP):
-		ret.val.insert(0,0)
-		ret.dP+=1
-		num1.val.insert(0,0)
-		num1.dP+=1
-	while(num2.dP<num1.dP):
-		num2.dP+=1
-		num2.val.insert(0,0)
-	while(len(num1.val)<len(num2.val)):
-		num1.val.append(0)
-		ret.val.append(0)
-	while(len(num2.val)<len(num1.val)):
-		num2.val.append(0)
+	if((len(num1.val)-num1.dP)<(len(num2.val)-num2.dP)):
+		for i in range(len(num2.val)-num2.dP-len(num1.val)+num1.dP):
+			num1.val.append(0)
+	if(num1.dP<num2.dP):
+		for i in range(num2.dP-num1.dP):
+			num1.val.insert(0,0)
+		num1.dP=num2.dP
 	c=0
-	leng=min(len(num1.val),len(num2.val))
-	for i in range (leng-1,-1,-1):
-		ret.val[i]=num1.val[i]+num2.val[i]+c
-		c=ret.val[i]//10
-		ret.val[i]%=10
+	dPDif=num1.dP-num2.dP
+	for i in range (min(len(num1.val),len(num2.val))-1,dPDif-1,-1):
+		num1.val[i]+=num2.val[i-dPDif]+c
+		c=num1.val[i]//10
+		num1.val[i]%=10
 	if c!=0:
-		ret.val.insert(0,c)
-		ret.dP+=1
-	ret.removeZerosBack()
+		num1.val.insert(0,c)
+		num1.dP+=1
 	num1.removeZerosBack()
-	num2.removeZerosBack()
-	num1.removeZerosFront()
-	num2.removeZerosFront()
-	return ret
+	return num1
 def multiplyByNum(num1, num2):
 	c=[0]
-	ret=num("1",0)
-	ret.dP=num1.dP+num2.dP-1
 	for i in range(len(num1.val)+len(num2.val)):
 		c.append(0)
 	for i in range(len(num1.val)):
@@ -206,11 +179,10 @@ def multiplyByNum(num1, num2):
 		c[i]+=d
 		d=c[i]//10
 		c[i]%=10
-		c[i]=int(c[i])
 	while d!=0:
-		c.insert(0,int(d%10))
-		ret.dP+=1
+		c.insert(0,d%10)
 		d//=10
-	ret.val=c
-	ret.removeZerosBack()
-	return ret
+	num1.val=c
+	num1.dP+=num2.dP-1
+	num1.removeZerosBack()
+	return num1
